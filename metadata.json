@@ -1,0 +1,6 @@
+{
+  "name": "Simple App",
+  "description": "A minimalist single-screen app with modern Material 3 design and typography.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
