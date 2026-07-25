@@ -41,8 +41,8 @@ COPY . .
 # Generate debug keystore for signing
 RUN keytool -genkey -v -keystore /app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-# Build debug APK
-RUN gradle :app:assembleDebug --no-daemon
+# Run unit tests and build debug APK
+RUN gradle :app:testDebugUnitTest :app:assembleDebug --no-daemon
 
 # Default command outputs build status and APK location
 CMD ["echo", "APK built successfully at /app/app/build/outputs/apk/debug/app-debug.apk"]
