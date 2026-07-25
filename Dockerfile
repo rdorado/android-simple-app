@@ -1,18 +1,25 @@
 # Use Java 17 JDK base image
 FROM eclipse-temurin:17-jdk
 
-# Set environment variables for Android SDK
+# Set environment variables for Android SDK and Gradle
 ENV ANDROID_HOME=/opt/android-sdk
-ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/build-tools/36.0.0
+ENV GRADLE_VERSION=8.11.1
+ENV GRADLE_HOME=/opt/gradle/gradle-${GRADLE_VERSION}
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/build-tools/36.0.0:${GRADLE_HOME}/bin
 
-# Install required tools
+# Install required build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     curl \
     git \
-    gradle \
     && rm -rf /var/lib/apt/lists/*
+
+# Download and install Gradle 8.x (required for modern Android Gradle Plugin)
+RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -O /tmp/gradle.zip && \
+    mkdir -p /opt/gradle && \
+    unzip -q /tmp/gradle.zip -d /opt/gradle && \
+    rm /tmp/gradle.zip
 
 # Download and set up Android Command Line Tools
 RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
@@ -32,7 +39,8 @@ WORKDIR /app
 COPY . .
 
 # Build debug APK
-RUN gradle assembleDebug --no-daemon
+RUN gradle :app:assembleDebug --no-daemon
 
 # Default command outputs build status and APK location
 CMD ["echo", "APK built successfully at /app/app/build/outputs/apk/debug/app-debug.apk"]
+
